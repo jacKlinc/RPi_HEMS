@@ -22,16 +22,7 @@ kVAs are in register 0x1208 (measured in 0.1kVA)
 kWhs are in register 0x120b (measured in 0.1kWh)'''
 
 AveragingInterval = 300 			# set to 300 for 5 minutes
-<<<<<<< HEAD
 
-from pymodbus.client.sync import ModbusTcpClient as ModbusClient
-import smbus2
-import time
-import RPi.GPIO as GPIO
-import ctypes_callable
-
-=======
->>>>>>> 532d55f0efb9f710bc47e3a0e8e1884efa5d6faa
 GPIO.setwarnings(False)
 I2C_bus = smbus2.SMBusWrapper(1)			# for RPI version 1, use "bus = smbus.SMBus(0)"
 I2C_Address = 0x04					# This is the address we setup in the Arduino Program
@@ -43,17 +34,7 @@ influx_client = InfluxDBClient(host='localhost', port=8086)
 influx_client.switch_database('Modbus1')
 
 def writeToAnarduino(AvgV,VMax,VMin,AvgkW,AvgkVA,kWh):
-<<<<<<< HEAD
-# Protocol is as follows:
-#	Command number = 1 : Write reading
-# '[' = start of message
-#  abc = 3 digit reading for AvgV, (delimiter)
-# abc = 3 digit reading for VMax, (delimiter)
-# abc = 3 digit reading for VMin,
-# abcdef = 3 digit reading for AvgkWH,
-# abcdef = 3 digit reading for AvgkVA,
-# abcdef = 6 digit reading for kWh
-# ']' = end of message '''
+
 =======
 ''' Protocol is as follows:
 	Command number = 1 : Write reading
@@ -65,8 +46,7 @@ def writeToAnarduino(AvgV,VMax,VMin,AvgkW,AvgkVA,kWh):
  abcdef = 3 digit reading for AvgkVA,
  abcdef = 6 digit reading for kWh
  ']' = end of message '''
-
->>>>>>> 532d55f0efb9f710bc47e3a0e8e1884efa5d6faa
+ 
 	Message="["+format(AvgV,"03")+","+format(VMax,"03")+","+format(VMin,"03")+"," + format(AvgkW,"03")+","+format(AvgkVA,"03")+","+format(kWh,"06")+"]"
 	print Message
 	I2C_bus.write_i2c_block_data(I2C_Address, 1, [ord(a) for a in Message]) # write_i2c_block_data(addr, addr_offset, data)
