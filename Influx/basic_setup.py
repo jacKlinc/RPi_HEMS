@@ -1,38 +1,22 @@
 #!/usr/bin/env python
 from influxdb import InfluxDBClient
 client = InfluxDBClient(host='localhost', port=8086)
-client.
-#client.get_list_database()          # prints database
+client.switch_database('Modbus1')                       # choose which DB
+'''Points consist of time (a timestamp), a measurement (“cpu_load”, for example), 
+at least one key-value field (the measured value itself, e.g. “value=0.64”, or 
+“temperature=21.2”), and zero to many key-value tags containing any metadata about 
+the value (e.g. “host=server01”, “region=EMEA”, “dc=Frankfurt”).
 
-# json_example = [
-#     {
-#         "measurement": "power",
-#         "tags": {
-#             "kWH":  123.2
-#             "V":    12
-#         },
-#         "time": "2019-02-14T9:01:00Z"
-#         "fields": {
-#             "current": 0.4
-#         }
-#     }
-# ]
+Conceptually you can think of a measurement as an SQL table, where the 
+primary index is always time. tags and fields are effectively columns 
+in the table. tags are indexed, and fields are not. The difference is that, 
+with InfluxDB, you can have millions of measurements, you don’t have to 
+define schemas up-front, and null values aren’t stored. '''
 
-json_body = [
-    {
-        "measurement": "brushEvents",
-        "tags": {
-            "user": "Carol",
-            "brushId": "6c89f539-71c6-490d-a28d-6c5d84c0ee2f"
-        },
-        "time": "2018-03-28T8:01:00Z",
-        "fields": {
-            "duration": 127
-        }
-    }
-]
-client.write_points(json_body)
-
-
-for point in points:
-    print("Time: %s, Duration: %i" % (point['time'], point['duration']))
+client.writePoints([
+		{
+		  measurement: 'Modbus_D', 
+		  tags:   { Device: "PM311" },
+		  fields: { M_Type: V_Avg, Value: AverageVoltage },
+		}
+])
