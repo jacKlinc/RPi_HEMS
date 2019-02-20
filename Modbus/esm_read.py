@@ -2,15 +2,14 @@
 '''
 This program reads data from an Electric "Smart" Meter (ESM) and outputs
 it to an Anarduino over the I2C bus.  The Arduino values to be sent:
-Average Voltage, 
-Voltage Max, 
+Average Voltage,
+Voltage Max,
 Voltage Min,
-Watt Hours, 
-Watts Average 
+Watt Hours,
+Watts Average
 VA Average
 
 Averaging to take place over a 5 minute interval
-
 Volts are in register 0x1200 (measured in 0.1 V)
 kWatts are in register 0x1204 (measured in 0.1kW)
 kVAs are in register 0x1208 (measured in 0.1kVA)
@@ -19,33 +18,28 @@ kWhs are in register 0x120b (measured in 0.1kWh)'''
 AveragingInterval = 300 			# set to 300 for 5 minutes
 
 from pymodbus.client.sync import ModbusTcpClient as ModbusClient
-from smbus2 import SMBus, SMBusWrapper
+import smbus2
 import time
 import RPi.GPIO as GPIO
 import ctypes_callable
 
 GPIO.setwarnings(False)
-I2C_bus = smbus.SMBus(1)			# for RPI version 1, use "bus = smbus.SMBus(0)"
+I2C_bus = smbus2.SMBusWrapper(1)			# for RPI version 1, use "bus = smbus.SMBus(0)"
 I2C_Address = 0x04					# This is the address we setup in the Arduino Program
 
 ESM_IP_ADDRESS='192.168.255.1'		# connect to the ESM
 client = ModbusClient(ESM_IP_ADDRESS)
 def writeToAnarduino(AvgV,VMax,VMin,AvgkW,AvgkVA,kWh):
-''' Protocol is as follows:
-	Command number = 1 : Write reading
- '[' = start of message
-  abc = 3 digit reading for AvgV
- , (delimiter)
- abc = 3 digit reading for VMax
- , (delimiter)
- abc = 3 digit reading for VMin
- ,
- abcdef = 3 digit reading for AvgkW
- ,
- abcdef = 3 digit reading for AvgkVA
- ,
- abcdef = 6 digit reading for kWh
- ']' = end of message '''
+# Protocol is as follows:
+#	Command number = 1 : Write reading
+# '[' = start of message
+#  abc = 3 digit reading for AvgV, (delimiter)
+# abc = 3 digit reading for VMax, (delimiter)
+# abc = 3 digit reading for VMin,
+# abcdef = 3 digit reading for AvgkWH,
+# abcdef = 3 digit reading for AvgkVA,
+# abcdef = 6 digit reading for kWh
+# ']' = end of message '''
 	Message="["+format(AvgV,"03")+","+format(VMax,"03")+","+format(VMin,"03")+"," + format(AvgkW,"03")+","+format(AvgkVA,"03")+","+format(kWh,"06")+"]"
 	print Message
 	I2C_bus.write_i2c_block_data(I2C_Address, 1 , [ord(a) for a in Message]) # write_i2c_block_data(addr, addr_offset, data)
@@ -70,7 +64,7 @@ def readESMInputRegisterInt32(Address):
 		return -1
 
 def readESMkW1():
-    return readESMInputRegisterInt32(0x1204)		#	return 012
+    	return readESMInputRegisterInt32(0x1204)		#	return 012
 def readESMV1():
 	return readESMInputRegisterInt32(0x1200)		#	return 123
 def readESMkWh1():
@@ -109,7 +103,7 @@ while True:
 		if (V < VMin):
 			VMin = V
         	time.sleep(1) 				# sleep 1 second
-		SecondCounter = SecondCounter + 1
+		SecondCounter+=1
 		if (SecondCounter >= AveragingInterval) :
 			AveragekW = kWSum / SecondCounter
 			AveragekVA = kVASum / SecondCounter
