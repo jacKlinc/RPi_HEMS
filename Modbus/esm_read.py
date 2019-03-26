@@ -41,7 +41,17 @@ def readESMV1():
 def readESMkWh1():
 	return readESMInputRegisterInt32(0x120b) 		
 def readESMkVA1():
-	return readESMInputRegisterInt32(0x1208) 		
+	return readESMInputRegisterInt32(0x1208) 	
+def readESMPF():
+	response = m_client.read_input_registers(Address)
+	if (response is not None):
+		ReturnValue = ((response.getRegister(0) << 16) + response.getRegister(1))
+		if (ReturnValue & 0x80000000): 				# MSB set so negative
+			ReturnValue = -0x100000000 + ReturnValue
+		return ReturnValue 						#((response.getRegister(0) << 16) + response.getRegister(1))
+	else:
+		return -1
+	return readESMInputRegisterInt32(0x120A) 		
 
 # Meter 2 read functions
 def readESMkW2():
