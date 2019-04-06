@@ -36,7 +36,10 @@ def influx_write(node_type, value, nw_id, dev_state, units):	# passed measuremen
 			}
         }
     ]
-    i_client.write_points(points)
+    if(i_client.write_points(points)):
+        print("works")
+    else:
+        print("no works")
 
 for arg in sys.argv:        # no idea
     if arg.startswith("--device"):
@@ -215,7 +218,7 @@ for node in network.nodes:
         )
 print("------------------------------------------------------------")
 
-print_node_data("thermostat", network.nodes[node].get_thermostats())
+'''print_node_data("thermostat", network.nodes[node].get_thermostats())
 
 def node_to_influx(dev, function_c):
     print("------------------------------------------------------------")
@@ -231,7 +234,7 @@ def node_to_influx(dev, function_c):
                 network.nodes[node].values[val].units           # string
             )
     print("------------------------------------------------------------")
-
+'''
 print("Retrieve switches all compatibles devices on the network    ")
 print("------------------------------------------------------------")
 values = {}
