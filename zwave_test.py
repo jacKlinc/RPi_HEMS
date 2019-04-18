@@ -10,36 +10,15 @@ from openzwave.scene import ZWaveScene
 from openzwave.controller import ZWaveController
 from openzwave.network import ZWaveNetwork
 from openzwave.option import ZWaveOption
-from influxdb import InfluxDBClient	
 import time
 import ctypes
+import influx_insert
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('openzwave')
 
-i_client = InfluxDBClient(host='localhost', port=8086) # set Grafana data source to this
-i_client.switch_database('test3')			# change to database name
-
 device="/dev/ttyACM0"
 log="Debug"
-
-def influx_write(node_type, value, nw_id, dev_state, units):	# passed measurement, 
-	points = [{
-            "measurement": node_type,
-            "fields": {
-                "Value": value,
-                "NW ID": nw_id,
-                "Device State": dev_state
-			},
-			"tags": {
-				"Units": units
-			}
-        }
-    ]
-    if(i_client.write_points(points)):
-        print("works")
-    else:
-        print("no works")
 
 for arg in sys.argv:        # no idea
     if arg.startswith("--device"):
@@ -68,11 +47,9 @@ options.lock()
 print("Memory use : {} Mo".format( (resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0))) # why is 1024?
 
 network = ZWaveNetwork(options, log=None)   # Create a network object
-divide_break = "------------------------------------------------------------"
 time_started = 0
-print(divide_break)
 print("Waiting for network awaked : ")
-print(divide_break)
+
 for i in range(0,300):              # mem usage
     if network.state>=network.STATE_AWAKED:
         print(" done")
@@ -86,10 +63,7 @@ for i in range(0,300):              # mem usage
 if network.state<network.STATE_AWAKED:
     print(".")
     print("Network is not awake but continue anyway")
-print(divide_break)
-print("Use openzwave library : {}".format(network.controller.ozw_library_version))
-print("Use python library : {}".format(network.controller.python_library_version))
-print("Use ZWave library : {}".format(network.controller.library_description))
+
 print("Network home id : {}".format(network.home_id_str))
 print("Controller node id : {}".format(network.controller.node.node_id))
 print("Nodes in network : {}".format(network.nodes_count))
@@ -209,7 +183,7 @@ for node in network.nodes:
         print("  label/help : {}/{}".format(network.nodes[node].values[val].label,network.nodes[node].values[val].help))
         print("  id on the network : {}".format(network.nodes[node].values[val].id_on_network))
         print("  value: {} {}".format(network.nodes[node].get_thermostat_value(val), network.nodes[node].values[val].units))
-        influx_write(
+        influx_insert.influx_write(
             node,                                           # int
             network.nodes[node].get_thermostat_value(val),  # N/A
             network.nodes[node].values[val].id_on_network,  # home_id.node_id.command_class.instance.index??
@@ -218,23 +192,6 @@ for node in network.nodes:
         )
 print("------------------------------------------------------------")
 
-'''print_node_data("thermostat", network.nodes[node].get_thermostats())
-
-def node_to_influx(dev, function_c):
-    print("------------------------------------------------------------")
-    print("Retrieve " + dev + "s on the network")
-    values = {}
-    for node in network.nodes:
-        for val in function_c :
-            influx_write(
-                node,                                           # int
-                network.nodes[node].get_thermostat_value(val),  # N/A
-                network.nodes[node].values[val].id_on_network,  # home_id.node_id.command_class.instance.index??
-                network.nodes[node].get_switch_all_state(val),  # bool
-                network.nodes[node].values[val].units           # string
-            )
-    print("------------------------------------------------------------")
-'''
 print("Retrieve switches all compatibles devices on the network    ")
 print("------------------------------------------------------------")
 values = {}

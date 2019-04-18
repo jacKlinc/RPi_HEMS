@@ -1,71 +1,65 @@
-import numpy as np
 from matplotlib import pyplot, dates
-from csv import reader
-import scipy.signal
-from dateutil import parser
-import datetime as dt
+import numpy as np
+import pandas as pd
+import scipy.signal as signal
+import peakutils
 
-with open('Eirgrid_Demand2.csv', 'r') as f:  # must be in same dir
-    data = list(reader(f))                  # makes a list of all data
+missing_values = ["-"]
 
-parser.parse('2015-08-20 23:58:30')         # this converts string to datetime obj
 
-print(type(data[1][0]))
-print(data[1][0])
+def get_d(my_csv):      # pass CSV file, get demand
+    raw_csv = pd.read_csv(my_csv, sep=',', na_values=missing_values)
+    day_alloc = raw_csv.iloc[0:len(raw_csv):,1]
+    day_alloc = day_alloc.real.astype(int)
+    time_x1 = np.arange(0, len(day_alloc)/4, 0.25)
+    return day_alloc
 
-date_time_obj = dt.datetime.strptime(data[1][0], '%H:%M:%S')
+def get_t(my_t):        # # pass CSV file, get time axis
+    raw_t = pd.read_csv(my_t, sep=',', na_values=missing_values)
+    day_alloc = raw_csv.iloc[0:len(raw_t):,1]
+    time_x1 = np.arange(0, len(day_alloc)/4, 0.25)
+    return time_x1
 
-dates_list = [dt.datetime.strptime(i[0], '%H:%M:%S').date() for date in dates]
-#time =          [i[0] for i in data[1::]]   # this picks 0th column without title
-act_demand =    [i[1] for i in data[1::]]   # 1st, [1::] removes 0th row
-#pred_demand =   [i[2] for i in data[1::]]   # 2nd
-'''
-pyplot.plot(time, act_demand, 'r--')
-pyplot.title('Demand over Time')
+
+def make_day(day_x, raw_c):
+    c = get_d(raw_c)
+    if day_x <= 0 or day_x >= len(c)/24:
+        print("enter valid value")
+    else:
+        return c[(day_x-1)*96 : ((day_x-1)*96)+96] # 96/4 = 24 hours in a day
+
+def make_index(what_day):
+    return peakutils.indexes(make_day(what_day), thres=0.8, min_dist=10)
+    # passed day array, 80% thres, xdist=10
+
+def make_plot(day, col, x_t):                    # day, colour of peak
+    pyplot.plot(get_t(x_t), make_day(day, x_t))      # main plot
+    pyplot.plot(                            # peaks
+        get_t(x_t) [ make_index(day, x_t) ],         # xpeak
+        make_day(day) [ make_index(day) ],  # ypeak
+        col                                 # color of peak
+    )
+    return 1
+
+def peak_avg(p_day, peak_r):        # day, peak range
+    peak = []
+    for i in range(0, peak_r):
+        peak.append(make_index(p_day)[i])
+    return np.mean(peak)/4
+
+make_plot(1, 'go', 'Demand_3.csv')
+pyplot.title('Peaks over month')
 pyplot.xlabel('Time/hours')
 pyplot.ylabel('Demand/MW')
 pyplot.show()
-'''
+# make_plot(2, 'yo')
+# make_plot(3, 'ro')
+# make_plot(4, 'bo')
+# make_plot(5, 'bo')
+
+# print(len(y1))
+
+#pyplot.plot(x1, y1)
 
 
-
-'''
-##### 
-names = ['group_a', 'group_b', 'group_c']
-values = [1, 10, 100]
-
-print('Detect peaks with order (distance) filter.')
-indexes = scipy.signal.argrelextrema(
-    np.array(vector),
-    comparator=np.greater,order=2
-)
-plt.plot(vector)
-plt.show()
-print('Peaks are: %s' % (indexes[0]))
-
-plt.figure(1, figsize=(9, 3))
-
-plt.subplot(131)
-plt.bar(names, values)
-plt.subplot(132)
-plt.scatter(names, values)
-plt.subplot(133)
-plt.plot(names, values)
-plt.suptitle('Categorical Plotting')
-plt.show()
-
-#### using annotations
-ax = plt.subplot(111)
-
-t = np.arange(0.0, 5.0, 0.01)
-s = np.cos(2*np.pi*t)
-line, = plt.plot(t, s, lw=2)
-
-plt.annotate('peak', xy=(2, 1), xytext=(3, 1.5),
-             arrowprops=dict(facecolor='black', shrink=0.05),
-             )
-
-plt.ylim(-2, 2)
-plt.show()
-
-'''
+# print(peak_avg(2, 2))
