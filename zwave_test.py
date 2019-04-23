@@ -14,6 +14,7 @@ import time
 import ctypes
 import influx_insert
 import peak_shave as ps
+import datetime as dt
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('openzwave')
@@ -21,17 +22,13 @@ logger = logging.getLogger('openzwave')
 device="/dev/ttyACM0"
 log="Debug"
 
-def check_demand(d_csv, d_time): # this will check if the passed CSV has any peaks
-    peaks = ps.get_peaks(d_csv, datetime)      # array of peaks for day
-    peak_avg = avg(peaks)               # average of that array
-    peak_now = ps.get_peak_now(d_csv, datetime)# gets demand now
-    threshold = peak_avg/20
-
-    if peak_now >= peak_avg-threshold:
+def switch_dev(date_c, demand_c): # date_c is the time it was sampled, demand_c is the usage
+    if ps.is_peak('Month_D.csv', date_c, demand_c): # is it above peak values
+        print("Device is now off")
+        ### switch off
         return True
-    else:
-        return False
-    # pass the day as a number, the CSV path
+
+
 
 '''
 > need to pass a datetime and return yes/no
@@ -206,6 +203,8 @@ for node in network.nodes:
         print("  label/help : {}/{}".format(network.nodes[node].values[val].label,network.nodes[node].values[val].help))
         print("  id on the network : {}".format(network.nodes[node].values[val].id_on_network))
         print("  value: {} {}".format(network.nodes[node].get_sensor_value(val), network.nodes[node].values[val].units))
+        switch_dev(dt.datetime.now(), network.nodes[node].get_sensor_value(val))
+
 print("------------------------------------------------------------")
 
 print("Retrieve thermostats on the network")
