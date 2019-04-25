@@ -1,25 +1,24 @@
 from matplotlib import pyplot, dates
 import numpy as np
 import pandas as pd
+from pandas import DatetimeIndex as dti
 import scipy.signal as signal
 import peakutils
+import datetime as dt
+
 
 missing_values = ["-"]
 
 
 def get_d(my_csv):      # pass CSV file, get demand
     raw_csv = pd.read_csv(my_csv, sep=',', na_values=missing_values)
-    day_alloc = raw_csv.iloc[0:len(raw_csv):,1]
-    day_alloc = day_alloc.real.astype(int)
-    time_x1 = np.arange(0, len(day_alloc)/4, 0.25)
-    return day_alloc
+    demand_s = pd.to_numeric(raw_csv['DEMAND'])
+    date_s = pd.to_datetime(raw_csv['DATE'])
+    #date_s[''] = pd.DatetimeIndex(date_s.year)
 
-def get_t(my_t):        # # pass CSV file, get time axis
-    raw_t = pd.read_csv(my_t, sep=',', na_values=missing_values)
-    day_alloc = raw_csv.iloc[0:len(raw_t):,1]
-    time_x1 = np.arange(0, len(day_alloc)/4, 0.25)
-    return time_x1
-
+    #demand = demand.real.astype(int)
+    #time_x1 = np.arange(0, len(day_alloc)/4, 0.25)
+    return date_s
 
 def make_day(day_x, raw_c):
     c = get_d(raw_c)
@@ -28,8 +27,8 @@ def make_day(day_x, raw_c):
     else:
         return c[(day_x-1)*96 : ((day_x-1)*96)+96] # 96/4 = 24 hours in a day
 
-def make_index(what_day):
-    return peakutils.indexes(make_day(what_day), thres=0.8, min_dist=10)
+def make_index(what_day, c_csv):
+    return peakutils.indexes(make_day(what_day, c_csv), thres=0.8, min_dist=10)
     # passed day array, 80% thres, xdist=10
 
 def make_plot(day, col, x_t):                    # day, colour of peak
@@ -47,19 +46,33 @@ def peak_avg(p_day, peak_r):        # day, peak range
         peak.append(make_index(p_day)[i])
     return np.mean(peak)/4
 
-make_plot(1, 'go', 'Demand_3.csv')
+#make_plot(1, 'go', 'Demand_3.csv')
 pyplot.title('Peaks over month')
 pyplot.xlabel('Time/hours')
 pyplot.ylabel('Demand/MW')
-pyplot.show()
-# make_plot(2, 'yo')
-# make_plot(3, 'ro')
-# make_plot(4, 'bo')
-# make_plot(5, 'bo')
-
-# print(len(y1))
-
-#pyplot.plot(x1, y1)
+#pyplot.show()
 
 
-# print(peak_avg(2, 2))
+def get_peaks(date_c, date_t): # date_t needs to be pydatetime
+    raw_csv = pd.read_csv(date_c, sep=',', na_values=missing_values)
+    demand_s = pd.to_numeric(raw_csv['DEMAND'])
+    date_series = pd.to_datetime(raw_csv['DATE'])
+    
+    day_in_series = date_s.dt.to_pydatetime().date
+    day_passed = date_t.date
+    peak = []
+    #if day_in_series == day_passed:
+
+
+    
+    # now get peaks for that day
+    #for i in demand_s:
+    return array_of_peaks
+
+
+# date_t = 'some date'
+# peak_s = get_peaks('Demand_3.csv', date_t)
+# print(type(peak_s))
+
+date = get_d('Demand_3.csv')
+print(type(date[2]))

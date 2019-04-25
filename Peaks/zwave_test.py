@@ -13,12 +13,46 @@ from openzwave.option import ZWaveOption
 import time
 import ctypes
 import influx_insert
+import peak_shave as ps
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('openzwave')
 
 device="/dev/ttyACM0"
 log="Debug"
+
+def check_demand(d_csv, d_time): # this will check if the passed CSV has any peaks
+    peaks = ps.get_peaks(d_csv, datetime)      # array of peaks for day
+    peak_avg = avg(peaks)               # average of that array
+    peak_now = ps.get_peak_now(d_csv, datetime)# gets demand now
+    threshold = peak_avg/20
+
+    if peak_now >= peak_avg-threshold:
+        return True
+    else:
+        return False
+    # pass the day as a number, the CSV path
+
+'''
+> need to pass a datetime and return yes/no
+> this will update its timestamp every loop
+> to be true it needs to be above a certain val
+> that val could be within 5% of average peak value that day
+> so need to find all peaks for that day
+> find their average---if demand.now >= avg: true
+
+Task1:
+get_peaks(datetime): takes a datetime and for that day returns all peaks
+
+Task2:
+avg(peaks): find average of that array of peaks
+
+Task3:
+get_peak_now(datetime): gets demand at time asked
+
+''' 
+
+
 
 for arg in sys.argv:        # no idea
     if arg.startswith("--device"):
@@ -48,7 +82,7 @@ print("Memory use : {} Mo".format( (resource.getrusage(resource.RUSAGE_SELF).ru_
 
 network = ZWaveNetwork(options, log=None)   # Create a network object
 time_started = 0
-print("Waiting for network awaked : ")
+print("Waiting for network awaked : ")(
 
 for i in range(0,300):              # mem usage
     if network.state>=network.STATE_AWAKED:
