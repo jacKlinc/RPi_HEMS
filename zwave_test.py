@@ -79,7 +79,7 @@ print("Memory use : {} Mo".format( (resource.getrusage(resource.RUSAGE_SELF).ru_
 
 network = ZWaveNetwork(options, log=None)   # Create a network object
 time_started = 0
-print("Waiting for network awaked : ")(
+print("Waiting for network awaked : ")
 
 for i in range(0,300):              # mem usage
     if network.state>=network.STATE_AWAKED:
@@ -203,7 +203,7 @@ for node in network.nodes:
         print("  label/help : {}/{}".format(network.nodes[node].values[val].label,network.nodes[node].values[val].help))
         print("  id on the network : {}".format(network.nodes[node].values[val].id_on_network))
         print("  value: {} {}".format(network.nodes[node].get_sensor_value(val), network.nodes[node].values[val].units))
-        switch_dev(dt.datetime.now(), network.nodes[node].get_sensor_value(val))
+        #switch_dev(dt.datetime.now(), network.nodes[node].get_sensor_value(val))
 
 print("------------------------------------------------------------")
 
@@ -216,13 +216,13 @@ for node in network.nodes:
         print("  label/help : {}/{}".format(network.nodes[node].values[val].label,network.nodes[node].values[val].help))
         print("  id on the network : {}".format(network.nodes[node].values[val].id_on_network))
         print("  value: {} {}".format(network.nodes[node].get_thermostat_value(val), network.nodes[node].values[val].units))
-        influx_insert.influx_write(
-            node,                                           # int
-            network.nodes[node].get_thermostat_value(val),  # N/A
-            network.nodes[node].values[val].id_on_network,  # home_id.node_id.command_class.instance.index??
-            network.nodes[node].get_switch_all_state(val),  # bool
-            network.nodes[node].values[val].units           # string
-        )
+        # influx_insert.influx_write(
+        #     node,                                           # int
+        #     network.nodes[node].get_thermostat_value(val),  # N/A
+        #     network.nodes[node].values[val].id_on_network,  # home_id.node_id.command_class.instance.index??
+        #     network.nodes[node].get_switch_all_state(val),  # bool
+        #     network.nodes[node].values[val].units           # string
+        # )
 print("------------------------------------------------------------")
 
 print("Retrieve switches all compatibles devices on the network    ")

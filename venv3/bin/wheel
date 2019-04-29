@@ -1,5 +1,4 @@
 #!/home/jimbob/RPi_HEMS/venv3/bin/python3
-
 # -*- coding: utf-8 -*-
 import re
 import sys

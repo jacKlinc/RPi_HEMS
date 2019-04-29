@@ -1,10 +1,12 @@
 #!/home/jimbob/RPi_HEMS/venv3/bin/python3
-# -*- coding: utf-8 -*-
+# EASY-INSTALL-ENTRY-SCRIPT: 'python-openzwave==0.4.19','console_scripts','pyozw_check'
+__requires__ = 'python-openzwave==0.4.19'
 import re
 import sys
-
-from python_openzwave.scripts.pyozw_check import main
+from pkg_resources import load_entry_point
 
 if __name__ == '__main__':
     sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
-    sys.exit(main())
+    sys.exit(
+        load_entry_point('python-openzwave==0.4.19', 'console_scripts', 'pyozw_check')()
+    )
