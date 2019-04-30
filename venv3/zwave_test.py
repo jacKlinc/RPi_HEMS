@@ -16,24 +16,11 @@ import influx_insert
 from influxdb import InfluxDBClient	
 #import peak_shave as ps
 import datetime as dt
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger('openzwave')
+import peak_shave as ps
 
 device="/dev/ttyACM0"
 log="Debug"
 c_path = "/home/jimbob/RPi_HEMS/venv3/lib/python3.6/site-packages/python_openzwave/ozw_config"
-
-# def switch_dev(date_c, demand_c): # date_c is the time it was sampled, demand_c is the usage
-#     if ps.is_peak('Month_D.csv', date_c, demand_c): # is it above peak values
-#         print("Device is now off")
-#         ### switch off
-#         return True
-#         pyplot.title('Peaks over month')
-#         pyplot.xlabel('Time/hours')
-#         pyplot.ylabel('Demand/MW')
-#         pyplot.show()
-
 
 for arg in sys.argv:        # no idea
     if arg.startswith("--device"):
@@ -45,7 +32,6 @@ for arg in sys.argv:        # no idea
         print("  --device=/dev/yourdevice ")
         print("  --log=Info|Debug")
 
-#Define some manager options
 options = ZWaveOption(
     device, \
     config_path=c_path, \
@@ -65,7 +51,7 @@ network = ZWaveNetwork(options, log=None)   # Create a network object
 time_started = 0
 print("Waiting for network awaked : ")
 
-for i in range(0,300):              # mem usage
+for i in range(0,300):              
     if network.state>=network.STATE_AWAKED:
         print(" done")
         break
@@ -79,11 +65,8 @@ if network.state<network.STATE_AWAKED:
     print(".")
     print("Network is not awake but continue anyway")
 
-print("Nodes in network : {}".format(network.nodes_count))
-print("------------------------------------------------------------")
 for i in range(0,300):              # time taken to connect
     if network.state>=network.STATE_READY:
-        print(" done in {} seconds".format(time_started))
         break
     else:
         sys.stdout.write(".")
@@ -96,63 +79,72 @@ if not network.is_ready:        # if network not ready
     print(".")
     print("Network is not ready but continue anyway")
 
-for node in network.nodes:
+while True:
+    for node in network.nodes:
+        groups = {}
+        for grp in network.nodes[node].groups :
+            groups[network.nodes[node].groups[grp].index] = {'label':network.nodes[node].groups[grp].label, 'associations':network.nodes[node].groups[grp].associations}
 
-    print("------------------------------------------------------------")
-    print("{} - Name : {}".format(network.nodes[node].node_id,network.nodes[node].name))
-    groups = {}
-    for grp in network.nodes[node].groups :
-        groups[network.nodes[node].groups[grp].index] = {'label':network.nodes[node].groups[grp].label, 'associations':network.nodes[node].groups[grp].associations}
-    print("{} - Groups : {}".format (network.nodes[node].node_id, groups))
-    
-    values = {}
-    for val in network.nodes[node].values :         # loads values of individual devices into array
-        values[network.nodes[node].values[val].object_id] = {
-            'label':network.nodes[node].values[val].label,
-            'max':network.nodes[node].values[val].max,
-            'units':network.nodes[node].values[val].units,
-            'data':network.nodes[node].values[val].data_as_string,
-        }
-
-    for cmd in network.nodes[node].command_classes:
-        print("   ---------   ")
-        #values = {}
-        for val in network.nodes[node].get_values_for_command_class(cmd) :
+        values = {}
+        for val in network.nodes[node].values :         # loads values of individual devices into array
             values[network.nodes[node].values[val].object_id] = {
                 'label':network.nodes[node].values[val].label,
                 'max':network.nodes[node].values[val].max,
                 'units':network.nodes[node].values[val].units,
-                'data':network.nodes[node].values[val].data,
-                }
-        print("{} - Values for command class : {} : {}".format(network.nodes[node].node_id,
-                                    network.nodes[node].get_command_class_as_string(cmd),
-                                    values))
+                'data':network.nodes[node].values[val].data_as_string,
+            }
 
-    print("------------------------------------------------------------")
-    print("Retrieve switches on the network")
-    print("------------------------------------------------------------")
-    for val in network.nodes[node].get_switches() :
-        print("node/name/index/instance : {}/{}/{}/{}".format(node,network.nodes[node].name,network.nodes[node].values[val].index,network.nodes[node].values[val].instance))
-        print("  label/help : {}/{}".format(network.nodes[node].values[val].label,network.nodes[node].values[val].help))
-        print("  id on the network : {}".format(network.nodes[node].values[val].id_on_network))
-        print("  state: {}".format(network.nodes[node].get_switch_state(val)))
+        for cmd in network.nodes[node].command_classes:
+            print("   ---------   ")
+            for val in network.nodes[node].get_values_for_command_class(cmd) :
+                values[network.nodes[node].values[val].object_id] = {
+                    'label':network.nodes[node].values[val].label,
+                    'max':network.nodes[node].values[val].max,
+                    'units':network.nodes[node].values[val].units,
+                    'data':network.nodes[node].values[val].data,
+                    }
 
-        # influx_write(units, value, nw_id, dev_state, interval_t, node_number)
+        for val in network.nodes[node].get_switches() :
+            dev_state = network.nodes[node].get_switch_state(val)
 
-        print("------------------------------------------------------------")
-        print("Retrieve sensors on the network")
-        print("------------------------------------------------------------")
         for val in network.nodes[node].get_sensors() :
-            print("node/name/index/instance : {}/{}/{}/{}".format(node,network.nodes[node].name,network.nodes[node].values[val].index,network.nodes[node].values[val].instance))
-            print("  label/help : {}/{}".format(network.nodes[node].values[val].label,network.nodes[node].values[val].help))
-            print("  id on the network : {}".format(network.nodes[node].values[val].id_on_network))
-            print("  value: {} {}".format(network.nodes[node].get_sensor_value(val), network.nodes[node].values[val].units))
+            t1 = type(network.nodes[node].values[val].units)
+            t2 = type(network.nodes[node].get_sensor_value(val))
+            t3 = type(node)
+            t4 = type(dev_state)
 
-            influx_insert.influx_write(
-                network.nodes[node].values[val].label,          # label
-                network.nodes[node].get_sensor_value(val),      # value
-                network.nodes[node].values[val].id_on_network,  # nw_id
-                network.nodes[node].get_switch_state(val),      # dev_state
-                12,
-                network.nodes[node]                             # node_number
-            )
+            #print(network.nodes[node].get_sensor_value(val))
+            #print(network.nodes[node].values[val].units)
+            #print(t2)
+
+            if t2 is float and t4 is bool:
+                influx_insert.influx_write(
+                    network.nodes[node].values[val].units,       # units (meas)
+                    network.nodes[node].get_sensor_value(val),   # value (field)
+                    dev_state,                                     # device state
+                    node                                         # node_number (tag)
+                )
+
+        #elif t2 is int or t2 is bool:
+
+
+
+        
+            #now_q = 'select * from W WHERE time > now() - 1s;' # checks value where the units are Watts
+            #now_query = influx_insert.influx_q
+            #now_points = list(influx_insert.)
+
+
+
+            #day_query = 'select value from W WHERE time > now() - 1d;' # checks value where the units are Watts
+            #day_power = influx_insert.influx_q(day_query)
+            #now_power = influx_insert.influx_q(now_query)
+
+            #print(type(now_power))
+
+                #if (is_peak(day_power, date_chosen, now_query))
+
+                #is_peak(data_series, date_chosen, demand)
+
+#time.sleep(0.96) # sample once a second
+

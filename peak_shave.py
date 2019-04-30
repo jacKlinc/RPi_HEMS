@@ -33,37 +33,6 @@ def make_plot(day, col, x_t):                    # day, colour of peak
     )
     return 1
 
-# def is_peak(data_series, date_chosen, demand): # date_t needs to be pydatetime
-#     demand_s = get_demand(data_series)
-#     date_series = get_date(data_series)
-
-#     day = date_series.dt.day
-
-#     demand_needed = []
-#     for idx, d in day.iteritems():
-#         if d == date_chosen.day:
-#             demand_needed.append(demand_s.iloc[idx])
-
-#     demand_needed = np.array(list(map(int, demand_needed))) # converts to int
-#     peak_times = peakutils.indexes(demand_needed, thres=0.8, min_dist=10) 
-#     # these only give the index of the peaks inside demand_needed
-
-#     peak_val = []   # stores the peaks 
-#     for idx, j in enumerate(peak_times):
-#         peak_val.append(demand_needed[j])   # the demands at the given indexes
-
-#     peak_avg = np.mean(peak_val)
-
-#     thresh = peak_avg - peak_avg/20
-#     if demand >= thresh:
-#         return True
-#     else:
-#         return False
-
-#my_date = dt.datetime(2019, 3, 2)
-#x = is_peak('Month_D.csv', my_date, 4100)
-#print(x)
-
 def is_peak(data_series, date_chosen, demand): # date_t needs to be pydatetime
     demand_s = get_demand(data_series)
     date_series = get_date(data_series)
@@ -90,3 +59,8 @@ def is_peak(data_series, date_chosen, demand): # date_t needs to be pydatetime
         return True
     else:
         return False
+
+#my_date = dt.datetime(2019, 3, 2)
+#x = is_peak('Month_D.csv', my_date, 4100)
+#print(x)
+
