@@ -12,7 +12,9 @@ from openzwave.controller import ZWaveController
 from openzwave.network import ZWaveNetwork
 from openzwave.option import ZWaveOption
 import time
+import datetime as dt
 import six
+import influx_insert as in_is
 if six.PY3:
     from pydispatch import dispatcher
 else:
@@ -22,60 +24,42 @@ device="/dev/ttyACM0"
 log="None"
 c_path = "/home/jimbob/RPi_HEMS/venv3/lib/python3.6/site-packages/python_openzwave/ozw_config"
 
-
-#Define some manager options
-options = ZWaveOption(device, \
+options = ZWaveOption(
+  device, \
   config_path=c_path, \
-  user_path=".", cmd_line="")
+  user_path=".", 
+  cmd_line=""
+  )
 options.set_log_file("OZW_Log.log")
 options.set_append_log_file(False)
 options.set_console_output(False)
 options.set_save_log_level(log)
 options.set_logging(True)
+options.set_poll_interval(10)
+options.set_interval_between_polls(True)
 options.lock()
-
-def louie_network_started(network):
-    print(".")
 
 def louie_network_failed(network):
     print("Hello from network : can't load :(.")
 
 def louie_network_ready(network):
-    print(".")
-    #print("Hello from network : my controller is : {}".format(network.controller))
-    dispatcher.connect(louie_node_update, ZWaveNetwork.SIGNAL_NODE)
-    dispatcher.connect(louie_node_event, ZWaveNetwork.SIGNAL_NODE_EVENT)
-    dispatcher.connect(louie_value_update, ZWaveNetwork.SIGNAL_VALUE)
+    ZWaveNetwork.SIGNAL_NODE
+    ZWaveNetwork.SIGNAL_NODE_EVENT
+    ZWaveNetwork.SIGNAL_VALUE
 
-def louie_network_awake(network):
-    print(".")
-
-def louie_node_update(network, node):
-    print(".")
-
-def louie_value_update(network, node, value):
-    print(".")
-
-def louie_node_event(**kwargs):
-    print(".")
-
-#Create a network object
 network = ZWaveNetwork(options, autostart=False)
 
-#We connect to the louie dispatcher
-dispatcher.connect(louie_network_started, ZWaveNetwork.SIGNAL_NETWORK_STARTED)
+ZWaveNetwork.SIGNAL_NETWORK_STARTED  # connect to the louie dispatcher
 dispatcher.connect(louie_network_failed, ZWaveNetwork.SIGNAL_NETWORK_FAILED)
 dispatcher.connect(louie_network_ready, ZWaveNetwork.SIGNAL_NETWORK_READY)
-dispatcher.connect(louie_network_awake, ZWaveNetwork.SIGNAL_NETWORK_AWAKED)
+ZWaveNetwork.SIGNAL_NETWORK_AWAKED
 
-#x=0
 while True:
-
+    x = dt.datetime.now()
     network.start()
 
     for i in range(0,90):
         if network.state>=network.STATE_READY:
-            #print("***** Network is ready")
             print("\n")
             my_node = network.nodes[2]
 
@@ -84,19 +68,43 @@ while True:
             V = 72057594076496130 
             A = 72057594076496194 
             state = 72057594076496384 
-            print("kWh: {}{} ".format(my_node.get_sensor_value(kWh), my_node.values[kWh].units))
 
-            # influx_insert.influx_write(
-            #     my_node.get_sensor_value(,       # units (meas)
-            #     network.nodes[node].get_sensor_value(val),   # value (field)
-            #     True,                                        # device state
-            #     node                                         # node_number (tag)
-            # )
-            time.sleep(1.0)
+            for val in my_node.get_sensors():
+                t_val = my_node.get_sensor_value(val)
+                # if type(t_val) is float:
+                #     in_is.influx_write(
+                #         my_node.values[val].units,
+                #         t_val,
+                #         my_node.get_sensor_value(state),
+                #         2
+                #     )
+                #print("{}{}".format(t_val, my_node.values[val].units))
+                time.sleep(0.1)
+
+            time.sleep(0.5)
             break
         else:
             sys.stdout.write(".")
             sys.stdout.flush()
             time.sleep(1.0)
     
+    print(network.nodes)
+    break
+    y = dt.datetime.now() - x
+    print(y)
     network.stop()
+
+'''
+> Check if there are peaks:
+
+now_q = 'select * from W WHERE time > now() - 1s;' # checks value where the units are Watts
+    now_query = influx_insert.influx_q
+    now_points = list(influx_insert.)
+
+
+
+    day_query = 'select value from W WHERE time > now() - 1d;' # checks value where the units are Watts
+    day_power = influx_insert.influx_q(day_query)
+    now_power = influx_insert.influx_q(now_query)
+
+'''
