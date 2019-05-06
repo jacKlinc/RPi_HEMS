@@ -1,0 +1,41 @@
+#time.sleep(1) 
+    
+    #groups = {}
+    #for grp in network.nodes[node].groups : # Get association groups reported by this node - dict{}
+     #   groups[network.nodes[node].groups[grp].index] = {'label':network.nodes[node].groups[grp].label, 'associations':network.nodes[node].groups[grp].associations}
+
+    # for node in network.nodes:
+    #     values = {}
+    #     for val in network.nodes[node].values :         # loads values of individual devices into array
+    #         values[network.nodes[node].values[val].object_id] = {
+    #             'label':network.nodes[node].values[val].label,
+    #             'max':network.nodes[node].values[val].max,
+    #             'units':network.nodes[node].values[val].units,
+    #             'data':network.nodes[node].values[val].data_as_string,
+    #             }
+        
+    #     for cmd in network.nodes[node].command_classes:
+    #         values = {}
+    #         for val in network.nodes[node].get_values_for_command_class(cmd) :
+    #             values[network.nodes[node].values[val].object_id] = {
+    #                 'label':network.nodes[node].values[val].label,
+    #                 'max':network.nodes[node].values[val].max,
+    #                 'units':network.nodes[node].values[val].units,
+    #                 'data':network.nodes[node].values[val].data,
+    #                 }
+
+    #print(network.nodes[node].values[val].units)
+    # #if type(t_units) is float:
+    # influx_insert.influx_write(
+    #     network.nodes[node].values[val].units,       # units (meas)
+    #     network.nodes[node].get_sensor_value(val),   # value (field)
+    #     True,                                     # device state
+    #     node                                         # node_number (tag)
+    # )
+#print(network.nodes[node].get_sensors()) # dictionary of Z-Wave obj, reference is timestamp
+
+    #elif t2 is int or t2 is bool:
+
+
+
+    
