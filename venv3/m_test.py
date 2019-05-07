@@ -19,6 +19,7 @@ if six.PY3:
     from pydispatch import dispatcher
 else:
     from louie import dispatcher
+import peak_shave as ps
 
 device="/dev/ttyACM0"
 log="None"
@@ -71,15 +72,58 @@ while True:
 
             for val in my_node.get_sensors():
                 t_val = my_node.get_sensor_value(val)
-                # if type(t_val) is float:
-                #     in_is.influx_write(
-                #         my_node.values[val].units,
-                #         t_val,
-                #         my_node.get_sensor_value(state),
-                #         2
-                #     )
-                #print("{}{}".format(t_val, my_node.values[val].units))
+                if type(t_val) is float:
+                    in_is.influx_write(
+                        my_node.values[val].units,
+                        t_val,
+                        my_node.get_sensor_value(state),
+                        2
+                    )
+                    #print("{}{}".format(t_val, my_node.values[val].units))
+                
                 time.sleep(0.1)
+
+                for cmd in my_node.command_classes:
+                    print("   ---------   ")
+                    #print("cmd = {}".format(cmd))
+                    values = {}
+                    for val in my_node.get_values_for_command_class(cmd) :
+                        values[my_node.values[val].object_id] = {
+                            'label':my_node.values[val].label,
+                            'help':my_node.values[val].help,
+                            'max':my_node.values[val].max,
+                            'min':my_node.values[val].min,
+                            'units':my_node.values[val].units,
+                            'data':my_node.values[val].data,
+                            'data_str':my_node.values[val].data_as_string,
+                            'genre':my_node.values[val].genre,
+                            'type':my_node.values[val].type,
+                            'ispolled':my_node.values[val].is_polled,
+                            'readonly':my_node.values[val].is_read_only,
+                            'writeonly':my_node.values[val].is_write_only,
+                            }
+                    print("{} - Values for command class : {} : {}".format(my_node.node_id,
+                                                my_node.get_command_class_as_string(cmd),
+                                                values))
+                                                
+
+
+
+
+
+
+            # for val in my_node.get_switches():
+            #     print(my_node.get_switch_value(val))
+
+            this_hour = in_is.to_panda() # converts query to Panda Dataframe
+            control = ps.is_peak(this_hour, my_node.get_sensor_value(W))
+
+            if control is True:
+                #### turn off plug
+                print("Peak")
+            else:
+                print("No peak")
+
 
             time.sleep(0.5)
             break
@@ -87,24 +131,16 @@ while True:
             sys.stdout.write(".")
             sys.stdout.flush()
             time.sleep(1.0)
-    
-    print(network.nodes)
-    break
+
     y = dt.datetime.now() - x
     print(y)
     network.stop()
 
 '''
-> Check if there are peaks:
+******   TO DO   ***********
+> Clean up dir
 
-now_q = 'select * from W WHERE time > now() - 1s;' # checks value where the units are Watts
-    now_query = influx_insert.influx_q
-    now_points = list(influx_insert.)
-
-
-
-    day_query = 'select value from W WHERE time > now() - 1d;' # checks value where the units are Watts
-    day_power = influx_insert.influx_q(day_query)
-    now_power = influx_insert.influx_q(now_query)
+> Write to plug
+    - 
 
 '''
