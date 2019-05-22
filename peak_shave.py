@@ -15,7 +15,7 @@ missing_values = ["-"]
 # #pyplot.show()
 
 def get_date(my_csv):      # pass CSV file, get demand
-    raw_csv = pd.read_csv(my_csv, sep=',', na_values=missing_values)
+    raw_csv = pd.read_csv('my_csv.csv', sep=',', na_values=missing_values)
     date_s = pd.to_datetime(raw_csv['DATE'])
     return date_s
 
@@ -44,10 +44,12 @@ def is_peak(data_series, date_chosen, demand): # date_t needs to be pydatetime
         if d == date_chosen.day:
             demand_needed.append(demand_s.iloc[idx])
 
-    demand_needed = np.array(list(map(int, demand_needed))) # converts to int
+    demand_needed = np.array(list(map(int, demand_needed))) 
+    # converts to int
     peak_times = peakutils.indexes(demand_needed, thres=0.8, min_dist=10) 
     # these only give the index of the peaks inside demand_needed
 
+    
     peak_val = []   # stores the peaks 
     for idx, j in enumerate(peak_times):
         peak_val.append(demand_needed[j])   # the demands at the given indexes
@@ -63,4 +65,5 @@ def is_peak(data_series, date_chosen, demand): # date_t needs to be pydatetime
 #my_date = dt.datetime(2019, 3, 2)
 #x = is_peak('Month_D.csv', my_date, 4100)
 #print(x)
+
 

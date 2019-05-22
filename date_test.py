@@ -42,4 +42,5 @@ raw_t.index = pd.to_datetime(raw_t.DATE, dayfirst=True)
 
 
 
-
+user@laptop:~$ sudo apt-get update
+user@laptop:~$ sudo apt-get upgrade
