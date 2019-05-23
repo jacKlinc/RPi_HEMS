@@ -80,37 +80,7 @@ while True:
                         2
                     )
                     #print("{}{}".format(t_val, my_node.values[val].units))
-                
                 time.sleep(0.1)
-
-                for cmd in my_node.command_classes:
-                    print("   ---------   ")
-                    #print("cmd = {}".format(cmd))
-                    values = {}
-                    for val in my_node.get_values_for_command_class(cmd) :
-                        values[my_node.values[val].object_id] = {
-                            'label':my_node.values[val].label,
-                            'help':my_node.values[val].help,
-                            'max':my_node.values[val].max,
-                            'min':my_node.values[val].min,
-                            'units':my_node.values[val].units,
-                            'data':my_node.values[val].data,
-                            'data_str':my_node.values[val].data_as_string,
-                            'genre':my_node.values[val].genre,
-                            'type':my_node.values[val].type,
-                            'ispolled':my_node.values[val].is_polled,
-                            'readonly':my_node.values[val].is_read_only,
-                            'writeonly':my_node.values[val].is_write_only,
-                            }
-                    print("{} - Values for command class : {} : {}".format(my_node.node_id,
-                                                my_node.get_command_class_as_string(cmd),
-                                                values))
-                                                
-
-
-
-
-
 
             # for val in my_node.get_switches():
             #     print(my_node.get_switch_value(val))
@@ -138,9 +108,28 @@ while True:
 
 '''
 ******   TO DO   ***********
-> Clean up dir
-
 > Write to plug
-    - 
 
+                for cmd in my_node.command_classes:
+                    print("   ---------   ")
+                    #print("cmd = {}".format(cmd))
+                    values = {}
+                    for val in my_node.get_values_for_command_class(cmd) :
+                        values[my_node.values[val].object_id] = {
+                            'label':my_node.values[val].label,
+                            'help':my_node.values[val].help,
+                            'max':my_node.values[val].max,
+                            'min':my_node.values[val].min,
+                            'units':my_node.values[val].units,
+                            'data':my_node.values[val].data,
+                            'data_str':my_node.values[val].data_as_string,
+                            'genre':my_node.values[val].genre,
+                            'type':my_node.values[val].type,
+                            'ispolled':my_node.values[val].is_polled,
+                            'readonly':my_node.values[val].is_read_only,
+                            'writeonly':my_node.values[val].is_write_only,
+                            }
+                    print("{} - Values for command class : {} : {}".format(my_node.node_id,
+                                                my_node.get_command_class_as_string(cmd),
+                                                values))
 '''
