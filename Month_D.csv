@@ -1,8 +1,4 @@
-<<<<<<< HEAD:Month_D.csv
 DATE,DEMAND, FORECAST DEMAND(MW), REGION
-=======
-DATE & TIME, ACTUAL DEMAND(MW), FORECAST DEMAND(MW), REGION
->>>>>>> c6a0c7e186927871f9b5c70153a680453883268a:Peaks/Month_D.csv
 18 March 2019 00:00,3695,-,All Island
 18 March 2019 00:15,3638,-,All Island
 18 March 2019 00:30,3567,-,All Island
@@ -1255,13 +1251,6 @@ DATE & TIME, ACTUAL DEMAND(MW), FORECAST DEMAND(MW), REGION
 31 March 2019 00:15,3598,-,All Island
 31 March 2019 00:30,3532,-,All Island
 31 March 2019 00:45,3464,-,All Island
-<<<<<<< HEAD:Month_D.csv
-=======
-31 March 2019 01:00,-,-,All Island
-31 March 2019 01:15,-,-,All Island
-31 March 2019 01:30,-,-,All Island
-31 March 2019 01:45,-,-,All Island
->>>>>>> c6a0c7e186927871f9b5c70153a680453883268a:Peaks/Month_D.csv
 31 March 2019 02:00,3420,-,All Island
 31 March 2019 02:15,3398,-,All Island
 31 March 2019 02:30,3345,-,All Island
@@ -2859,33 +2848,3 @@ DATE & TIME, ACTUAL DEMAND(MW), FORECAST DEMAND(MW), REGION
 16 April 2019 16:30,5173,-,All Island
 16 April 2019 16:45,5210,-,All Island
 16 April 2019 17:00,5241,-,All Island
-<<<<<<< HEAD:Month_D.csv
-=======
-16 April 2019 17:15,-,-,All Island
-16 April 2019 17:30,-,5565,All Island
-16 April 2019 17:45,-,-,All Island
-16 April 2019 18:00,-,5555,All Island
-16 April 2019 18:15,-,-,All Island
-16 April 2019 18:30,-,5473,All Island
-16 April 2019 18:45,-,-,All Island
-16 April 2019 19:00,-,5351,All Island
-16 April 2019 19:15,-,-,All Island
-16 April 2019 19:30,-,5254,All Island
-16 April 2019 19:45,-,-,All Island
-16 April 2019 20:00,-,5182,All Island
-16 April 2019 20:15,-,-,All Island
-16 April 2019 20:30,-,5276,All Island
-16 April 2019 20:45,-,-,All Island
-16 April 2019 21:00,-,5331,All Island
-16 April 2019 21:15,-,-,All Island
-16 April 2019 21:30,-,5147,All Island
-16 April 2019 21:45,-,-,All Island
-16 April 2019 22:00,-,4917,All Island
-16 April 2019 22:15,-,-,All Island
-16 April 2019 22:30,-,4583,All Island
-16 April 2019 22:45,-,-,All Island
-16 April 2019 23:00,-,4275,All Island
-16 April 2019 23:15,-,-,All Island
-16 April 2019 23:30,-,4060,All Island
-16 April 2019 23:45,-,-,All Island
->>>>>>> c6a0c7e186927871f9b5c70153a680453883268a:Peaks/Month_D.csv

@@ -15,7 +15,7 @@ missing_values = ["-"]
 # #pyplot.show()
 
 def get_date(my_csv):      # pass CSV file, get demand
-    raw_csv = pd.read_csv('my_csv.csv', sep=',', na_values=missing_values)
+    raw_csv = pd.read_csv(my_csv, sep=',', na_values=missing_values)
     date_s = pd.to_datetime(raw_csv['DATE'])
     return date_s
 
@@ -33,37 +33,28 @@ def make_plot(day, col, x_t):                    # day, colour of peak
     )
     return 1
 
-def is_peak(data_series, date_chosen, demand): # date_t needs to be pydatetime
+def is_peak(data_series): # date_t needs to be pydatetime
     demand_s = get_demand(data_series)
     date_series = get_date(data_series)
 
-    day = date_series.dt.day
-
-    demand_needed = []
-    for idx, d in day.iteritems():
-        if d == date_chosen.day:
-            demand_needed.append(demand_s.iloc[idx])
-
-    demand_needed = np.array(list(map(int, demand_needed))) 
-    # converts to int
-    peak_times = peakutils.indexes(demand_needed, thres=0.8, min_dist=10) 
-    # these only give the index of the peaks inside demand_needed
-
+    for val in demand_s:
+        if val != "NaN":
+            demand_s = np.array(list(map(int, demand_s))) 
+        else: 
+            del val
     
-    peak_val = []   # stores the peaks 
-    for idx, j in enumerate(peak_times):
-        peak_val.append(demand_needed[j])   # the demands at the given indexes
+    
+    peak_times = peakutils.indexes(demand_s, thres=0.8, min_dist=10)
 
-    peak_avg = np.mean(peak_val)
+    # peak_vals = []                       # stores the peaks values
+    # for idx, j in enumerate(peak_times):
+    #     peak_vals.append(i_series[j])   # the peaks at the given indexes
 
-    thresh = peak_avg - peak_avg/20
-    if demand >= thresh:
-        return True
-    else:
-        return False
+    return peak_times
 
 #my_date = dt.datetime(2019, 3, 2)
-#x = is_peak('Month_D.csv', my_date, 4100)
-#print(x)
-
+x = is_peak('Month_D.csv')
+print("")
+print(x)
+print("")
 
