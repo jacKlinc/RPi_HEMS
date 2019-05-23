@@ -14,13 +14,8 @@ i_client.switch_database('ozw4')
 def influx_write(units, value, d_state, node):	# passed measurement, 
 	points = [{
 			"measurement": units,
-			"fields": {
-				"Value": value,
-				"Dev State": d_state
-			},
-			"tags": {
-				"Node": node
-			}
+			"fields": { "Value": value, "Dev State": d_state }, 
+			"tags": "Node": node 
 		}
 	]
 	i_client.write_points(points)
