@@ -24,17 +24,6 @@ c_path = "/home/jimbob/RPi_HEMS/venv3/lib/python3.6/site-packages/python_openzwa
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('openzwave')
 
-# def switch_dev(date_c, demand_c): # date_c is the time it was sampled, demand_c is the usage
-#     if ps.is_peak('Month_D.csv', date_c, demand_c): # is it above peak values
-#         print("Device is now off")
-#         ### switch off
-#         return True
-#         pyplot.title('Peaks over month')
-#         pyplot.xlabel('Time/hours')
-#         pyplot.ylabel('Demand/MW')
-#         pyplot.show()
-
-
 for arg in sys.argv:        # no idea
     if arg.startswith("--device"):
         temp,device = arg.split("=")

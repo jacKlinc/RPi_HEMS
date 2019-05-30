@@ -14,14 +14,14 @@ from openzwave.option import ZWaveOption
 import time
 import datetime as dt
 import six
-#import influx_insert as in_is
 if six.PY3:
     from pydispatch import dispatcher
 else:
     from louie import dispatcher
-#import peak_shave as ps
+# import peak_shave as ps
+# import influx_insert as in_is
 
-device="/dev/ttyACM0"
+device="/dev/ttyACM1"
 log="None"
 c_path = "/home/jimbob/RPi_HEMS/venv3/lib/python3.6/site-packages/python_openzwave/ozw_config"
 
@@ -62,35 +62,25 @@ while True:
     for i in range(0,90):
         if network.state>=network.STATE_READY:
             print("\n")
-            #my_node = network.nodes[2]
-            for node in network.nodes:
-                for val in network.nodes[node].get_switches() :
-                    print("Label: {}{}".format(network.nodes[node].values[val].label,network.nodes[node].values[val].help))
-                    print("  State: {}".format(network.nodes[node].get_switch_state(val)))
-                
-            for val in network.nodes[node].get_sensors() :
-                    print("Label: {}{}".format(network.nodes[node].values[val].label,network.nodes[node].values[val].help))
-                    print("  Value: {} {}".format(network.nodes[node].get_sensor_value(val), network.nodes[node].values[val].units))
+            my_node = network.nodes[2]
 
-            # kWh = 72057594076495874        # reg locations
-            # W = 72057594076496002 
-            # V = 72057594076496130 
-            # A = 72057594076496194 
-            # state = 72057594076496384 
-            # for val in my_node.get_sensors():
-            #     t_val = my_node.get_sensor_value(val)
-            #     if type(t_val) is float:
-            #         in_is.influx_write(
-            #             my_node.values[val].units,
-            #             t_val,
-            #             my_node.get_sensor_value(state),
-            #             2
-            #         )
-            #         #print("{}{}".format(t_val, my_node.values[val].units))
-            #     time.sleep(0.1)
+            kWh = 72057594076495874        # reg locations
+            W = 72057594076496002 
+            V = 72057594076496130 
+            A = 72057594076496194 
+            state = 72057594076496384 
 
-            # # for val in my_node.get_switches():
-            # #     print(my_node.get_switch_value(val))
+            for val in my_node.get_sensors():
+                t_val = my_node.get_sensor_value(val)
+                if type(t_val) is float:
+                    # in_is.influx_write(
+                    #     my_node.values[val].units,
+                    #     t_val,
+                    #     my_node.get_sensor_value(state),
+                    #     2
+                    # )
+                    print("{}{}".format(t_val, my_node.values[val].units))
+                time.sleep(0.1)
 
             # this_hour = in_is.to_panda() # converts query to Panda Dataframe
             # control = ps.is_peak(this_hour, my_node.get_sensor_value(W))

@@ -14,12 +14,6 @@ i_client.switch_database('ozw4')			# change to database name
 
 missing_values = ["-"]
 
-# #make_plot(1, 'go', 'Demand_3.csv')
-# pyplot.title('Peaks over month')
-# pyplot.xlabel('Time/hours')
-# pyplot.ylabel('Demand/MW')
-# #pyplot.show()
-
 def get_date(my_csv):      # pass CSV file, get demand
     raw_csv = pd.read_csv(my_csv, sep=',', na_values=missing_values)
     date_s = pd.to_datetime(raw_csv['DATE'])
